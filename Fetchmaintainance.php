@@ -108,6 +108,32 @@
         .delete-btn:hover {
             background-color: #cc0000;
         }
+        @media print {
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
+            }
+
+            h2 {
+                text-align: center;
+            }
+
+            ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            li {
+                margin-bottom: 5px;
+            }
+
+            #printBtn {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -127,10 +153,16 @@
 
     <label for="flat_no">Flat Number:</label>
     <input type="text" id="flat_no" name="flat_no" placeholder="Enter flat number" class="filter-input">
-    
+     
+    <!-- Pending button -->
+
+
     <input type="submit" value="Filter" class="filter-submit">
 </form>
-
+<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="GET" class="filter-form" id="pendingForm">
+    <input type="submit" name="pending" value="Pending" class="filter-submit">
+</form>
+<button id="printBtn" onclick="window.print()">Print</button>
 </body>
 </html>
 
@@ -204,6 +236,81 @@ if ($result->num_rows > 0) {
     echo "No maintenance records found.";
 }
 
+
+function fetchPendingMonths($conn) {
+    // Function to get the list of months between two dates
+    function getMonthsInRange($start_date, $end_date) {
+        $start_date = new DateTime($start_date);
+        $end_date = new DateTime($end_date);
+
+        $interval = new DateInterval('P1M');
+        $period = new DatePeriod($start_date, $interval, $end_date->modify('+1 month'));
+
+        $months = array();
+        foreach ($period as $date) {
+            $months[] = $date->format('F Y');
+        }
+
+        return $months;
+    }
+
+    // Get the current date
+    $current_month_year = date('F Y');
+
+    // Flat numbers to search for
+    $flat_numbers = array('1', '2', '3', '4', '5', '6', '001', '002', '003', '101', '102', '103', '104', '201', '202', '203', '204', '301', '302', '303', '304');
+
+    // Array to store the list of months for each flat number
+    $months_for_flat_numbers = array();
+
+    // Filter flat numbers that have already paid
+    $sql_paid_flat_numbers = "SELECT DISTINCT flat_no FROM maintenance_records";
+    $result_paid_flat_numbers = $conn->query($sql_paid_flat_numbers);
+    $paid_flat_numbers = array();
+    if ($result_paid_flat_numbers->num_rows > 0) {
+        while ($row_paid_flat_number = $result_paid_flat_numbers->fetch_assoc()) {
+            $paid_flat_numbers[] = $row_paid_flat_number['flat_no'];
+        }
+    }
+
+    $unpaid_flat_numbers = array_diff($flat_numbers, $paid_flat_numbers);
+
+    // Loop through unpaid flat numbers
+    foreach ($unpaid_flat_numbers as $flat_number) {
+        // Construct SQL query to get the last paid month for the current flat number
+        $sql_last_paid_month = "SELECT MAX(month_year) AS last_paid_month FROM maintenance_records WHERE flat_no = '$flat_number'";
+        $result_last_paid_month = $conn->query($sql_last_paid_month);
+        $row_last_paid_month = $result_last_paid_month->fetch_assoc();
+        $last_paid_month = $row_last_paid_month['last_paid_month'];
+
+        // If no records found for the flat number, assume the last paid month is April 2024
+        if (empty($last_paid_month)) {
+            $last_paid_month = 'April 2024';
+        }
+
+        // Get the list of months between the last paid month and the current month
+        $months_between = getMonthsInRange($last_paid_month, $current_month_year);
+
+        // Store the list of months for the current flat number
+        $months_for_flat_numbers[$flat_number] = $months_between;
+    }
+
+    // Output the list of months between last paid month and current month for each flat number
+    foreach ($months_for_flat_numbers as $flat_number => $months) {
+        echo "<h2>Flat Number: $flat_number</h2>";
+        echo "<ul>";
+        foreach ($months as $month) {
+            echo "<li>$month</li>";
+        }
+        echo "</ul>";
+    }
+}
+// Check if the "Pending" button is clicked
+if (isset($_GET['pending'])) {
+    // Call the function to fetch pending months
+    fetchPendingMonths($conn);
+}
+
 // Check if id parameter is set
 if (isset($_POST['id'])) {
     // Escape user inputs for security
@@ -219,8 +326,10 @@ if (isset($_POST['id'])) {
     }
 }
 
+
+
 // If any filter is applied, display the Reset button
-if (!empty($filter_month) || !empty($filter_year) || !empty($filter_flat_no)) {
+if (!empty($filter_month) || !empty($filter_year) || !empty($filter_flat_no)||isset($_GET['pending'])) {
     echo "<form  action='' method='GET'>";
     echo "<input  type='submit' value='Reset' class='reset-btn'>";
     echo "</form>";
@@ -261,6 +370,7 @@ $conn->close();
     deleteButtons.forEach(button => {
         button.addEventListener('click', deleteRecord);
     });
+
 
 
     
