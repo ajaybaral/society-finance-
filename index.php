@@ -79,6 +79,7 @@ body {
     background-color: #f2f2f2;
 }
 
+
 /* Navbar styles */
 .navbar {
     background-color: #333;
@@ -114,7 +115,7 @@ body {
 
 /* Section styles */
 
-p:hover{
+body p:hover{
 color: red;
 }
 .section1 {
@@ -174,7 +175,7 @@ color: red;
         </div>
         <div class="nav-items">
             <p class="nav-item"><a href="/SFS/ABOUT-US">ABOUT US</a></p>
-            <p class="nav-item"><a href="/SFS/SERVICES">SERVICES</a></p>
+            <p class="nav-item"><a href="/SFS/">SERVICES</a></p>
             <p class="nav-item"><a href="/SFS/LOGOUT">LOGOUT</a></p>
             <p class="nav-item"><a href="/SFS/CONTACT">CONTACT</a></p>
         </div>
@@ -183,12 +184,12 @@ color: red;
     <section class="section1">
         <div class="content">
             <h2>SERVICES</h2>
-            <div class="services-list">
+            <div class="services-list" >
                 <p><a href="/SFS/maintainance.php">PAY MAINTENANCE</a></p>
                 <p><a href="/SFS/Fetchmaintainance.php">MAINTENANCE RECORD</a></p>
                 <p><a href="/SFS/Voucher.php">VOUCHER CLAIM</a></p>
                 <p><a href="/SFS/FetchVoucher.php">VOUCHER RECORDS</a></p>
-                <p><a href="/SFS/KNOW FINANCE STATUS">KNOW FINANCE STATUS</a></p>
+                <p><a href="/SFS/balance.php">KNOW FINANCE STATUS</a></p>
                 <p><a href="/SFS/OTHER FUNDS CREDIT">OTHER FUNDS CREDIT</a></p>
                 <p><a href="/SFS/OTHER FUNDS DEBIT">OTHER FUNDS DEBIT</a></p>
             </div>
