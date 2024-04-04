@@ -41,7 +41,7 @@
     <div class="nav-items">
         <p class="nav-item"><a href="/SFS/">HOME</a></p>
         <p class="nav-item"><a href="/SFS/ABOUT-US">ABOUT US</a></p>
-        <p class="nav-item"><a href="/SFS/SERVICES">SERVICES</a></p>
+        <p class="nav-item"><a href="/SFS/">SERVICES</a></p>
         <p class="nav-item"><a href="/SFS/LOGOUT">LOGOUT</a></p>
         <p class="nav-item"><a href="/SFS/CONTACT">CONTACT</a></p>
     </div>
